@@ -59,10 +59,10 @@ need setuptools.
     
     # Allocate a pin as level triggered Input signal
     
-    def pin_changed(state):
-        print("Pin changed to %d state" % state)
+    def pin_changed(pin, state):
+        print("Pin %d changed to %d state" % (pin, state))
     
-    pin = GPIOController().alloc_pin(1, Direction.INPUT, changed, Edge.RISING)
+    pin = GPIOController().alloc_pin(1, Direction.INPUT, pin_changed, Edge.BOTH)
     pin.read()  # Reads pin logic level
 
 ```
