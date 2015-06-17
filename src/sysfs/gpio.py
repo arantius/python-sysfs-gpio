@@ -148,19 +148,24 @@ class GPIOPin(object):
         """
         return self._number
 
+    def value(self, LEVEL):
+        """
+        Set pin to LEVEL logic setLevel
+        """
+        self._fd.write(str(LEVEL))
+        self._fd.seek(0)
+
     def set(self):
         """
         Set pin to HIGH logic setLevel
         """
-        self._fd.write(self.SYSFS_GPIO_VALUE_HIGH)
-        self._fd.seek(0)
+        self.value(self.SYSFS_GPIO_VALUE_HIGH)
 
     def reset(self):
         """
         Set pin to LOW logic setLevel
         """
-        self._fd.write(self.SYSFS_GPIO_VALUE_LOW)
-        self._fd.seek(0)
+        self.value(self.SYSFS_GPIO_VALUE_LOW)
 
     def read(self):
         """
