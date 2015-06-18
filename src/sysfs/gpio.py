@@ -148,11 +148,11 @@ class GPIOPin(object):
         """
         return self._number
 
-    def value(self, LEVEL):
+    def value(self, level):
         """
-        Set pin to LEVEL logic setLevel
+        Set pin to level logic setLevel
         """
-        self._fd.write(str(LEVEL))
+        self._fd.write(str(level))
         self._fd.seek(0)
 
     def set(self):
