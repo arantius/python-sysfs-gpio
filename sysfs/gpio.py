@@ -114,7 +114,7 @@ class Pin(object):
                 raise Exception(
                     'You must supply a value for active_low which is either 0 or 1.')
             with open(self._sysfs_gpio_active_low_path(), 'w') as fsactive_low:
-                fsactive_low.write(active_low)
+                fsactive_low.write(str(active_low))
 
     @property
     def callback(self):
@@ -223,7 +223,7 @@ class Pin(object):
         @rtype: str
         @return: the path to sysfs active_low file
         """
-        return SYSFS_GPIO_ACTIVE_LOW_PATH % self.active_low
+        return SYSFS_GPIO_ACTIVE_LOW_PATH % self.number
 
 
 class Controller(object):
