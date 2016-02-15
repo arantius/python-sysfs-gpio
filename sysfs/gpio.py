@@ -28,12 +28,10 @@ __all__ = ('DIRECTIONS', 'INPUT', 'OUTPUT',
            'EDGES', 'RISING', 'FALLING', 'BOTH',
            'Controller')
 
+import logging
 import os
 import select
 
-from twisted.internet import reactor
-
-import logging
 
 Logger = logging.getLogger('sysfs.gpio')
 Logger.addHandler(logging.StreamHandler())
@@ -41,30 +39,30 @@ Logger.setLevel(logging.DEBUG)
 
 # Sysfs constants
 
-SYSFS_BASE_PATH     = '/sys/class/gpio'
+SYSFS_BASE_PATH = '/sys/class/gpio'
 
-SYSFS_EXPORT_PATH   = SYSFS_BASE_PATH + '/export'
+SYSFS_EXPORT_PATH = SYSFS_BASE_PATH + '/export'
 SYSFS_UNEXPORT_PATH = SYSFS_BASE_PATH + '/unexport'
 
-SYSFS_GPIO_PATH           = SYSFS_BASE_PATH + '/gpio%d'
+SYSFS_GPIO_PATH = SYSFS_BASE_PATH + '/gpio%d'
 SYSFS_GPIO_DIRECTION_PATH = SYSFS_GPIO_PATH + '/direction'
-SYSFS_GPIO_EDGE_PATH      = SYSFS_GPIO_PATH + '/edge'
-SYSFS_GPIO_VALUE_PATH     = SYSFS_GPIO_PATH + '/value'
+SYSFS_GPIO_EDGE_PATH = SYSFS_GPIO_PATH + '/edge'
+SYSFS_GPIO_VALUE_PATH = SYSFS_GPIO_PATH + '/value'
 SYSFS_GPIO_ACTIVE_LOW_PATH = SYSFS_GPIO_PATH + '/active_low'
 
-SYSFS_GPIO_VALUE_LOW   = '0'
-SYSFS_GPIO_VALUE_HIGH  = '1'
+SYSFS_GPIO_VALUE_LOW = '0'
+SYSFS_GPIO_VALUE_HIGH = '1'
 
 EPOLL_TIMEOUT = 1  # second
 
 # Public interface
 
-INPUT   = 'in'
-OUTPUT  = 'out'
+INPUT = 'in'
+OUTPUT = 'out'
 
-RISING  = 'rising'
+RISING = 'rising'
 FALLING = 'falling'
-BOTH    = 'both'
+BOTH = 'both'
 
 ACTIVE_LOW_ON = 1
 ACTIVE_LOW_OFF = 0
@@ -96,7 +94,7 @@ class Pin(object):
         """
         self._number = number
         self._direction = direction
-        self._callback  = callback
+        self._callback = callback
         self._active_low = active_low
 
         self._fd = open(self._sysfs_gpio_value_path(), 'r+')
@@ -113,7 +111,8 @@ class Pin(object):
 
         if active_low:
             if active_low not in ACTIVE_LOW_MODES:
-                raise Exception('You must supply a value for active_low which is either 0 or 1.')            
+                raise Exception(
+                    'You must supply a value for active_low which is either 0 or 1.')
             with open(self._sysfs_gpio_active_low_path(), 'w') as fsactive_low:
                 fsactive_low.write(active_low)
 
@@ -241,24 +240,11 @@ class Controller(object):
             instance._available_pins = []
             instance._running = True
 
-            # Cleanup before stopping reactor
-            reactor.addSystemEventTrigger('before', 'shutdown', instance.stop)
-
-            # Run the EPoll in a Thread, as it blocks.
-            reactor.callInThread(instance._poll_queue_loop)
-
             cls._instance = instance
         return cls._instance
 
     def __init__(self):
         pass
-
-    def _poll_queue_loop(self):
-
-        while self._running:
-            events = self._poll_queue.poll(EPOLL_TIMEOUT)
-            if len(events) > 0:
-                reactor.callFromThread(self._poll_queue_event, events)
 
     @property
     def available_pins(self):
