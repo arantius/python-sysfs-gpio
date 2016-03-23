@@ -162,13 +162,13 @@ class Pin(object):
         """
         Set pin to HIGH logic setLevel
         """
-        self._value(self.SYSFS_GPIO_VALUE_HIGH)
+        self._value(SYSFS_GPIO_VALUE_HIGH)
 
     def reset(self):
         """
         Set pin to LOW logic setLevel
         """
-        self._value(self.SYSFS_GPIO_VALUE_LOW)
+        self._value(SYSFS_GPIO_VALUE_LOW)
 
     def read(self):
         """
